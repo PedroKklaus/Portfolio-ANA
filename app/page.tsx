@@ -1,103 +1,706 @@
-import Image from "next/image";
+'use client';
+import React from "react";
 
-export default function Home() {
+/* ========= Paleta ========= */
+const palette = {
+  primaryDark: "#590004",
+  primary: "#A50104",
+  accent: "#FF82A9",
+  soft: "#FFC0BE",
+  blush: "#FFEBE7",
+  paper: "#FFF9EF",
+  ink: "#1b1b1b",
+};
+
+/* ========= Links globais ========= */
+const links = {
+  behanceProfile: "https://www.behance.net/JuraCriativo",
+  instagram: "https://instagram.com/seuusuario",
+  whatsapp: "https://wa.me/55XXXXXXXXXX",
+  email: "mailto:contato@sua-marca.com",
+};
+
+/* ========= Animações utilitárias ========= */
+const GlobalAnimations = () => (
+  <style jsx global>{`
+    :root { --bezier: cubic-bezier(.22,.68,0,1); }
+    body {
+      background:
+        radial-gradient(1200px 600px at 10% -20%, ${palette.blush}66, transparent 60%),
+        radial-gradient(900px 600px at 100% 10%, ${palette.soft}55, transparent 60%),
+        ${palette.paper};
+    }
+    .will-reveal { opacity: 0; transform: translateY(16px) scale(.98); transition: opacity .7s var(--bezier), transform .7s var(--bezier), filter .7s var(--bezier); will-change: opacity, transform, filter; filter: saturate(.9); }
+    .reveal { opacity: 1 !important; transform: translateY(0) scale(1) !important; filter: saturate(1); }
+    @keyframes floaty { 0% { transform: translateY(0) } 50% { transform: translateY(-10px) } 100% { transform: translateY(0) } }
+    .floaty { animation: floaty 6s ease-in-out infinite; }
+    @keyframes glow { 0% { box-shadow: 0 0 0 0 rgba(255,130,169,.35) } 70% { box-shadow: 0 0 0 14px rgba(255,130,169,0) } 100% { box-shadow: 0 0 0 0 rgba(255,130,169,0) } }
+    .glow { animation: glow 2.8s ease-out infinite; }
+    @keyframes shift { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
+    .animated-gradient { background-image: linear-gradient(90deg, ${palette.accent}, ${palette.soft}, ${palette.blush}); background-size: 200% 200%; animation: shift 8s linear infinite; }
+    .nav-link { position: relative; }
+    .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; transform: scaleX(0); transform-origin: left; transition: transform .35s var(--bezier); background: ${palette.accent}; border-radius: 999px; }
+    .nav-link:hover::after { transform: scaleX(1); }
+    .dot { transition: transform .25s var(--bezier); }
+    .dot.active { transform: translateY(-1px); }
+  `}</style>
+);
+
+/* ========= Reveal ========= */
+const Reveal: React.FC<{children: React.ReactNode; delay?: number; className?: string}> = ({ children, delay = 0, className }) => {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) {
+          requestAnimationFrame(() => {
+            el.style.transitionDelay = `${delay}ms`;
+            el.classList.add('reveal');
+          });
+          obs.unobserve(el);
+        }
+      }),
+      { threshold: 0.15 }
+    );
+    el.classList.add('will-reveal');
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [delay]);
+  return <div ref={ref} className={className}>{children}</div>;
+};
+
+/* ========= Button ========= */
+const Button = ({ href, children }: { href?: string; children: React.ReactNode }) => {
+  const cls =
+    "inline-flex items-center gap-2 px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all active:scale-[0.98] glow";
+  const style: React.CSSProperties = {
+    background: `linear-gradient(90deg, ${palette.accent}, ${palette.soft})`,
+    borderColor: palette.accent,
+    color: palette.primaryDark,
+    fontWeight: 800,
+    letterSpacing: ".02em",
+  };
+  const Comp: any = href ? "a" : "button";
+  const external = href?.startsWith("http");
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <Comp
+      href={href}
+      className={cls}
+      style={style}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+    >
+      {children}
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={palette.primaryDark} strokeWidth="2" className="ml-1">
+        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+      </svg>
+    </Comp>
+  );
+};
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+/* ========= Section ========= */
+const Section: React.FC<{ id?: string; title?: string; subtitle?: string; children: React.ReactNode }> = ({ id, title, subtitle, children }) => (
+  <section id={id} className="w-full">
+    <div className="mx-auto max-w-6xl px-6 py-20">
+      {title && (
+        <Reveal>
+          <div className="mb-10 drop-shadow-sm">
+            <p className="uppercase tracking-[0.35em] text-sm" style={{ color: palette.accent }}>Seção</p>
+            <h2 className="text-3xl md:text-4xl font-black" style={{ color: palette.primaryDark }}>{title}</h2>
+            {subtitle && <p className="mt-3 text-lg opacity-80" style={{ color: palette.ink }}>{subtitle}</p>}
+            <div className="mt-6 h-[3px] w-32 rounded-full animated-gradient shadow-md" />
+          </div>
+        </Reveal>
+      )}
+      {children}
     </div>
+  </section>
+);
+
+/* ========= Navbar ========= */
+const Navbar: React.FC = () => {
+  const items = [
+    { href: "#about", label: "Sobre" },
+    { href: "#services", label: "Serviços" },
+    { href: "#experience", label: "Diferenciais" },
+    { href: "#projects", label: "Projetos" },
+    { href: "#behance", label: "Behance" },
+    { href: "#education", label: "Educação" },
+    { href: "#contact", label: "Contato" },
+  ];
+  return (
+    <header
+      className="fixed top-0 inset-x-0 z-50 shadow-2xl backdrop-blur-xl"
+      style={{ background: `${palette.paper}F2`, borderBottom: `2px solid ${palette.blush}` }}
+    >
+      <div className="mx-auto max-w-6xl px-6 h-20 flex items-center justify-between">
+        <a href="#home" className="text-2xl font-black tracking-tight drop-shadow" style={{ color: palette.primary }}>
+          Ana <span style={{ color: palette.accent }}>Schaeffer</span>
+        </a>
+        <nav className="hidden md:flex items-center gap-8 text-base font-medium">
+          {items.map((it, i) => (
+            <a key={it.href} href={it.href} className="nav-link hover:opacity-90 drop-shadow-sm"
+               style={{ color: palette.ink, transitionDelay: `${i*20}ms` }}>
+              {it.label}
+            </a>
+          ))}
+          <a
+            href={links.behanceProfile}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 px-5 py-2 rounded-full border shadow-lg hover:shadow-2xl transition-all"
+            style={{ borderColor: palette.accent, color: palette.primaryDark, background: palette.blush }}
+          >
+            Behance
+          </a>
+        </nav>
+      </div>
+    </header>
+  );
+};
+
+/* ========= Hero ========= */
+const Hero: React.FC = () => (
+  <section id="home" className="pt-28" style={{ background: palette.paper }}>
+    <div className="mx-auto max-w-6xl px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+      <Reveal>
+        <div>
+          <p className="uppercase tracking-[0.35em] text-xs mb-3" style={{ color: palette.primary }}>
+            ✨ Ana Carolina | Design, Moda & Marketing
+          </p>
+          <h1 className="text-4xl md:text-6xl font-black leading-[1.05]" style={{ color: palette.primaryDark }}>
+            Transformo criatividade em estratégia para potencializar marcas e ideias.
+          </h1>
+          <p className="mt-5 text-lg md:text-xl opacity-90" style={{ color: palette.ink }}>
+            Clique abaixo e fale comigo agora mesmo!
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Button href="#contact">Fale comigo agora</Button>
+            <a
+              href="#services"
+              className="px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all"
+              style={{ borderColor: palette.primary, color: palette.primary, background: `${palette.blush}66` }}
+            >
+              Ver serviços
+            </a>
+            <a
+              href={links.behanceProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all"
+              style={{ borderColor: palette.accent, color: palette.primaryDark, background: palette.paper }}
+            >
+              Ver no Behance
+            </a>
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal delay={120}>
+        <div className="relative">
+          <div className="absolute -z-10 inset-0 blur-3xl opacity-60 animated-gradient rounded-[36px]" />
+          <div
+            className="aspect-[4/5] w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl floaty"
+            style={{ background: palette.blush }}
+          >
+            <img src="/images/profile.jpg" alt="Ana Carolina" className="w-full h-auto object-cover" />
+          </div>
+          <div
+            className="absolute right-1/2 translate-x-1/2 md:right-4 md:translate-x-0 -bottom-4 px-4 py-2 rounded-xl text-sm shadow-md"
+            style={{ background: palette.accent, color: palette.primaryDark, fontWeight: 700 }}
+          >
+            Disponível p/ projetos
+          </div>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+);
+
+/* ========= About ========= */
+const About: React.FC = () => (
+  <Section id="about" title="Sobre mim" subtitle="Quem sou">
+    <div className="grid md:grid-cols-2 gap-10">
+      <Reveal>
+        <p className="leading-7" style={{ color: palette.ink }}>
+          Sou formada em Design de Moda pela Universidade Dinâmica das Cataratas e atualmente curso
+          Pós-Graduação em Marketing de Moda e Beleza pela ESPM. Minha trajetória une a estética da moda
+          à força do marketing digital, entregando resultados que conectam identidade, estilo e impacto.
+        </p>
+      </Reveal>
+      <Reveal delay={100}>
+        <div className="rounded-2xl p-6 shadow-xl border hover:shadow-2xl transition-shadow"
+             style={{ background: palette.blush, borderColor: palette.soft }}>
+          <h3 className="font-bold mb-2" style={{ color: palette.primaryDark }}>Posicionamento</h3>
+          <p style={{ color: palette.ink }}>
+            Portfólio diverso em moda, design e marketing. Olhar criativo aliado a estratégias reais que geram resultados.
+          </p>
+        </div>
+      </Reveal>
+    </div>
+  </Section>
+);
+
+/* ========= Serviços ========= */
+const services = [
+  "Gerenciamento de Mídias Sociais – planejamento, criação de conteúdo e estratégias para engajar e converter.",
+  "Design Gráfico & Identidade Visual – artes profissionais, branding e desenvolvimento visual que fortalecem sua marca.",
+  "Moda & Produto – pesquisa de tendências, desenvolvimento de coleções, fichas técnicas e suporte criativo para marcas de moda.",
+];
+const Services: React.FC = () => (
+  <Section id="services" title="O que eu faço por você" subtitle="Como posso ajudar sua marca">
+    <div className="grid md:grid-cols-3 gap-6">
+      {services.map((s, i) => (
+        <Reveal key={i} delay={i * 60}>
+          <div
+            className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1"
+            style={{ background: palette.paper, borderColor: palette.soft }}
+          >
+            <div className="text-xl font-bold mb-2" style={{ color: palette.primary }}>
+              Serviço {i + 1}
+            </div>
+            <p style={{ color: palette.ink }}>{s}</p>
+          </div>
+        </Reveal>
+      ))}
+    </div>
+  </Section>
+);
+
+/* ========= Diferenciais ========= */
+const differentiators = [
+  "Experiência multidisciplinar unindo moda, design e marketing.",
+  "Olhar criativo aliado a estratégias reais que geram resultados.",
+  "Portfólio diverso com projetos em diferentes áreas e clientes satisfeitos.",
+];
+const Experience: React.FC = () => (
+  <Section id="experience" title="Por que trabalhar comigo?" subtitle="Meus diferenciais">
+    <ul className="grid md:grid-cols-3 gap-6">
+      {differentiators.map((d, i) => (
+        <Reveal key={d} delay={i * 70}>
+          <li
+            className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1"
+            style={{ background: palette.blush, borderColor: palette.soft }}
+          >
+            <p style={{ color: palette.ink }}>{d}</p>
+          </li>
+        </Reveal>
+      ))}
+    </ul>
+  </Section>
+);
+
+/* ========= Carousel (cards locais) ========= */
+const Carousel: React.FC<{ images: string[]; alt?: string; className?: string; }> = ({ images, alt = "Imagem do projeto", className }) => {
+  const [idx, setIdx] = React.useState(0);
+  const total = images.length || 1;
+  const prev = () => setIdx((i) => (i - 1 + total) % total);
+  const next = () => setIdx((i) => (i + 1) % total);
+  const go = (i: number) => setIdx(i);
+
+  return (
+    <div className={`relative ${className || ""}`}>
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-xl shadow-lg bg-white">
+        <img
+          key={images[idx]}
+          src={images[idx]}
+          alt={alt}
+          className="w-full h-full object-cover transition-all duration-300"
+        />
+      </div>
+      <button
+        aria-label="Anterior"
+        onClick={prev}
+        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-2 border shadow-md hover:shadow-lg active:scale-95"
+        style={{ background: palette.paper, borderColor: palette.soft, color: palette.primaryDark }}
+      >
+        ‹
+      </button>
+      <button
+        aria-label="Próxima"
+        onClick={next}
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-2 border shadow-md hover:shadow-lg active:scale-95"
+        style={{ background: palette.paper, borderColor: palette.soft, color: palette.primaryDark }}
+      >
+        ›
+      </button>
+      <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2">
+        {images.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => go(i)}
+            aria-label={`Ir para slide ${i + 1}`}
+            className={`dot h-2.5 rounded-full transition-all ${i === idx ? "w-6 active" : "w-2.5"}`}
+            style={{ background: i === idx ? palette.accent : palette.soft }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ========= Dados dos projetos (locais) ========= */
+const projectsData = [
+  {
+    title: "ARISSÁ – coleção & direção criativa",
+    desc: "Editorial de moda, detalhes e modelagem.",
+    images: [
+      "/images/projects/arissa/ARISSÁ.jpg",
+      "/images/projects/arissa/ARISSÁ2.jpg",
+      "/images/projects/arissa/ARISSÁ3.jpg",
+      "/images/projects/arissa/ARISSÁ4.jpg",
+      "/images/projects/arissa/ARISSÁ5.jpg",
+    ],
+  },
+  {
+    title: "TRIÔOH – sinalização e branding",
+    desc: "Cobertura fotográfica do espaço e identidade aplicada.",
+    images: [
+      "/images/projects/triooh/tricoh.jpg",
+      "/images/projects/triooh/trico2.jpg",
+      "/images/projects/triooh/trico3.jpg",
+    ],
+  },
+  {
+    title: "KIRU – embalagem & lifestyle",
+    desc: "Direção de arte, produto e lifestyle.",
+    images: [
+      "/images/projects/kiru/kiru.jpg",
+      "/images/projects/kiru/kiru (2).jpg",
+    ],
+  },
+];
+
+/* ========= Projetos (cards maiores) ========= */
+const Projects: React.FC = () => (
+  <Section id="projects" title="Projetos" subtitle="Alguns destaques recentes">
+    <div className="grid md:grid-cols-3 gap-6">
+      {projectsData.map((p, i) => (
+        <Reveal key={p.title} delay={i * 80}>
+          <div
+            className="rounded-2xl border shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 bg-white/70 min-h-[520px]"
+            style={{ borderColor: palette.soft, background: palette.paper }}
+          >
+            <Carousel images={p.images} alt={p.title} />
+            <div className="p-6">
+              <a href={links.behanceProfile} target="_blank" rel="noopener noreferrer">
+                <h3 className="font-bold hover:underline" style={{ color: palette.primaryDark }}>{p.title}</h3>
+              </a>
+              <p className="text-base opacity-80" style={{ color: palette.ink }}>{p.desc}</p>
+            </div>
+          </div>
+        </Reveal>
+      ))}
+    </div>
+  </Section>
+);
+
+/* ========= Behance (EMBED OFICIAL) ========= */
+/* IDs enviados por você */
+const behanceEmbedIds = [
+  "233346493", // Direito Agro — Social Media
+  "233340281", // Pediatria — Social Media
+  "233336459", // ID Visual — Nutricionista
+  "233335995", // Logo — Quiropraxia
+  "233334769", // ID Visual — Dermi Sant
+  "202331151", // Manual de Marca — Emília Gama
+];
+
+/* Componente de iframe responsivo (sem warnings) */
+const BehanceEmbedCard: React.FC<{ id: string; highlight?: boolean }> = ({ id, highlight }) => (
+  <div
+    className={`rounded-2xl border transition-all overflow-hidden bg-white/80
+                ${highlight ? "scale-[1.06] shadow-2xl z-10" : "scale-[0.96] shadow-lg opacity-95"}
+                w-[72vw] sm:w-[420px] lg:w-[420px]`}
+    style={{ borderColor: palette.soft, background: palette.paper }}
+  >
+    {/* Altura ajustada para evitar scroll interno; sem barras */}
+    <div style={{ position: "relative", width: "100%", height: "340px" }}>
+      <iframe
+        src={`https://www.behance.net/embed/project/${id}?ilo0=1`}
+        loading="lazy"
+        allow="clipboard-write; fullscreen"
+        allowFullScreen
+        scrolling="no"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          border: 0,
+          overflow: "hidden",
+        }}
+        title={`Behance project ${id}`}
+      />
+    </div>
+  </div>
+);
+
+
+
+const BehanceEmbedCarousel: React.FC = () => {
+  const ids = behanceEmbedIds;
+  const VISIBLE = 3;
+  const trackRef = React.useRef<HTMLDivElement | null>(null);
+  const cardRef = React.useRef<HTMLDivElement | null>(null);
+
+  // usamos índice "virtual" que pode passar dos limites
+  const [virtualIndex, setVirtualIndex] = React.useState(VISIBLE); // começa no primeiro bloco do clone
+  const [step, setStep] = React.useState(0);
+
+  // array duplicado (clone antes e depois)
+  const extended = [...ids, ...ids, ...ids]; // triplica
+  const base = ids.length;
+  const start = base; // offset inicial
+
+  React.useEffect(() => {
+    const measure = () => {
+      const card = cardRef.current;
+      const track = trackRef.current;
+      if (!card || !track) return;
+      const cardWidth = card.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(track).columnGap || "24") || 24;
+      setStep(cardWidth + gap);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const prev = () => setVirtualIndex((i) => i - 1);
+  const next = () => setVirtualIndex((i) => i + 1);
+  const go = (i: number) => setVirtualIndex(start + i);
+
+  // centraliza o índice atual
+  const translate = step ? -(virtualIndex - Math.floor(VISIBLE / 2)) * step : 0;
+
+  // reposiciona sem animação se passarmos do clone
+  React.useEffect(() => {
+    if (virtualIndex < base) {
+      // passou para trás
+      setTimeout(() => setVirtualIndex((i) => i + base), 0);
+    } else if (virtualIndex >= base * 2) {
+      // passou para frente
+      setTimeout(() => setVirtualIndex((i) => i - base), 0);
+    }
+  }, [virtualIndex, base]);
+
+  // highlight: pega índice real dentro do bloco do meio
+  const realIndex = (virtualIndex - start + base) % base;
+
+  return (
+    <Section id="behance" title="Portfólio no Behance (embed)" >
+      <Reveal>
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <a
+            href={links.behanceProfile}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all"
+            style={{ borderColor: palette.accent, color: palette.primaryDark, background: palette.blush }}
+          >
+            Ver perfil completo
+          </a>
+          <div className="hidden md:flex items-center gap-2">
+            <button onClick={prev} aria-label="Anterior"
+              className="rounded-full px-3 py-2 border shadow-md hover:shadow-lg active:scale-95"
+              style={{ background: palette.paper, borderColor: palette.soft, color: palette.primaryDark }}>‹</button>
+            <button onClick={next} aria-label="Próximo"
+              className="rounded-full px-3 py-2 border shadow-md hover:shadow-lg active:scale-95"
+              style={{ background: palette.paper, borderColor: palette.soft, color: palette.primaryDark }}>›</button>
+          </div>
+        </div>
+      </Reveal>
+
+      <div className="relative overflow-hidden">
+        <div
+          ref={trackRef}
+          className="flex items-stretch gap-6 will-change-transform"
+          style={{
+            transform: `translateX(${translate}px)`,
+            transition: "transform .6s var(--bezier)",
+          }}
+        >
+          {extended.map((id, i) => {
+            const highlight = i === virtualIndex;
+            return (
+              <div key={`${id}-${i}`} ref={i === start ? cardRef : undefined} className="shrink-0">
+                <BehanceEmbedCard id={id} highlight={highlight} />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* dots controlam índice real */}
+        <div className="mt-6 flex items-center justify-center gap-2">
+          {ids.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => go(i)}
+              aria-label={`Ir para ${i + 1}`}
+              className={`dot h-2.5 rounded-full transition-all ${i === realIndex ? "w-6 active" : "w-2.5"}`}
+              style={{ background: i === realIndex ? palette.accent : palette.soft }}
+            />
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+
+/* ========= Educação ========= */
+const Education: React.FC = () => (
+  <Section id="education" title="Educação" subtitle="Formação acadêmica">
+    <div className="grid md:grid-cols-2 gap-6">
+      <Reveal>
+        <div className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all"
+             style={{ borderColor: palette.soft, background: palette.blush }}>
+          <h3 className="font-bold" style={{ color: palette.primaryDark }}>Design de Moda</h3>
+          <p className="opacity-80" style={{ color: palette.ink }}>Universidade Dinâmica das Cataratas</p>
+        </div>
+      </Reveal>
+      <Reveal delay={100}>
+        <div className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all"
+             style={{ borderColor: palette.soft, background: palette.blush }}>
+          <h3 className="font-bold" style={{ color: palette.primaryDark }}>Pós em Marketing de Moda & Beleza</h3>
+          <p className="opacity-80" style={{ color: palette.ink }}>ESPM</p>
+        </div>
+      </Reveal>
+    </div>
+  </Section>
+);
+
+/* ========= Contato ========= */
+const Contact: React.FC = () => (
+  <Section id="contact" title="Contato" subtitle="Vamos criar juntos a próxima história da sua marca?">
+    <div className="grid md:grid-cols-2 gap-10">
+      <Reveal>
+        <div
+          className="rounded-3xl p-8 shadow-2xl border relative overflow-hidden"
+          style={{ borderColor: palette.soft, background: `linear-gradient(135deg, ${palette.accent}33, ${palette.soft}66)` }}
+        >
+          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl opacity-60 animated-gradient" />
+          <h3 className="text-2xl font-black mb-2" style={{ color: palette.primaryDark }}>
+            Vamos conversar?
+          </h3>
+          <p className="mb-6" style={{ color: palette.ink }}>
+            Me chame no e-mail ou WhatsApp. Respondo rapidinho ✨
+          </p>
+
+          <div className="flex flex-wrap gap-3">
+            <Button href={links.email}>Falar por e-mail</Button>
+            <a
+              href={links.whatsapp}
+              className="px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all"
+              style={{ borderColor: palette.primary, color: palette.primary, background: palette.paper }}
+            >
+              WhatsApp
+            </a>
+            <a
+              href={links.instagram}
+              className="px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all"
+              style={{ borderColor: palette.accent, color: palette.primaryDark, background: palette.blush }}
+            >
+              Instagram
+            </a>
+            <a
+              href={links.behanceProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all"
+              style={{ borderColor: palette.accent, color: palette.primaryDark, background: `${palette.blush}AA` }}
+            >
+              Behance
+            </a>
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal delay={120}>
+        <form
+          className="rounded-3xl p-6 border grid gap-4 shadow-2xl"
+          style={{ borderColor: palette.soft, background: palette.blush }}
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <div className="grid md:grid-cols-2 gap-4">
+            <input
+              required
+              placeholder="Seu nome"
+              className="px-4 py-3 rounded-xl outline-none shadow-inner"
+              style={{ background: palette.paper, border: `1px solid ${palette.soft}` }}
+            />
+            <input
+              required
+              type="email"
+              placeholder="Seu e-mail"
+              className="px-4 py-3 rounded-xl outline-none shadow-inner"
+              style={{ background: palette.paper, border: `1px solid ${palette.soft}` }}
+            />
+          </div>
+          <input
+            placeholder="Assunto (opcional)"
+            className="px-4 py-3 rounded-xl outline-none shadow-inner"
+            style={{ background: palette.paper, border: `1px solid ${palette.soft}` }}
+          />
+          <textarea
+            required
+            placeholder="Mensagem"
+            rows={5}
+            className="px-4 py-3 rounded-xl outline-none shadow-inner"
+            style={{ background: palette.paper, border: `1px solid ${palette.soft}` }}
+          />
+          <div className="flex items-center gap-3">
+            <input type="checkbox" id="consent" className="accent-pink-500" />
+            <label htmlFor="consent" className="text-sm" style={{ color: palette.ink }}>
+              Autorizo contato para retorno da mensagem.
+            </label>
+          </div>
+          <Button>Enviar mensagem</Button>
+        </form>
+      </Reveal>
+    </div>
+  </Section>
+);
+
+/* ========= Footer ========= */
+const Footer: React.FC = () => (
+  <footer className="py-12 text-center shadow-inner" style={{ background: palette.paper, color: palette.ink }}>
+    <div className="mx-auto max-w-6xl px-6">
+      <div className="h-[2px] w-full mb-6 animated-gradient rounded-full" />
+      <p className="opacity-80">
+        © {new Date().getFullYear()} Ana Carolina. Feito com ♥. —
+        <a href={links.behanceProfile} target="_blank" rel="noopener noreferrer" className="ml-2 underline nav-link" style={{ color: palette.primary }}>
+          Portfólio no Behance
+        </a>
+      </p>
+    </div>
+  </footer>
+);
+
+/* ========= Page ========= */
+export default function PortfolioPage() {
+  return (
+    <main
+      style={{
+        background: palette.paper,
+        color: palette.ink,
+        fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial",
+      }}
+    >
+      <GlobalAnimations />
+      <Navbar />
+      <Hero />
+      <About />
+      <Services />
+      <Experience />
+      <Projects />
+      <BehanceEmbedCarousel /> {/* ← carrossel horizontal com iframes oficiais */}
+      <Education />
+      <Contact />
+      <Footer />
+    </main>
   );
 }
