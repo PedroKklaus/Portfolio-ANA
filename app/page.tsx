@@ -12,7 +12,6 @@ const palette = {
   ink: "#1b1b1b",
 };
 
-/* ========= Links globais ========= */
 const links = {
   behanceProfile: "https://www.behance.net/JuraCriativo",
   instagram: "https://instagram.com/seuusuario",
