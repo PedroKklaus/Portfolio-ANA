@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import Image from "next/image";
 
 /* ========= Paleta ========= */
 const palette = {
@@ -46,7 +47,7 @@ const GlobalAnimations = () => (
 );
 
 /* ========= Reveal ========= */
-const Reveal: React.FC<{children: React.ReactNode; delay?: number; className?: string}> = ({ children, delay = 0, className }) => {
+const Reveal: React.FC<{ children: React.ReactNode; delay?: number; className?: string }> = ({ children, delay = 0, className }) => {
   const ref = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     const el = ref.current;
@@ -71,6 +72,7 @@ const Reveal: React.FC<{children: React.ReactNode; delay?: number; className?: s
 };
 
 /* ========= Button ========= */
+/* ========= Button ========= */
 const Button = ({ href, children }: { href?: string; children: React.ReactNode }) => {
   const cls =
     "inline-flex items-center gap-2 px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all active:scale-[0.98] glow";
@@ -81,10 +83,11 @@ const Button = ({ href, children }: { href?: string; children: React.ReactNode }
     fontWeight: 800,
     letterSpacing: ".02em",
   };
-  const Comp: any = href ? "a" : "button";
-  const external = href?.startsWith("http");
-  return (
-    <Comp
+
+  const external = !!href && href.startsWith("http");
+
+  return href ? (
+    <a
       href={href}
       className={cls}
       style={style}
@@ -93,11 +96,19 @@ const Button = ({ href, children }: { href?: string; children: React.ReactNode }
     >
       {children}
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={palette.primaryDark} strokeWidth="2" className="ml-1">
-        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+        <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
       </svg>
-    </Comp>
+    </a>
+  ) : (
+    <button className={cls} style={style}>
+      {children}
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={palette.primaryDark} strokeWidth="2" className="ml-1">
+        <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+      </svg>
+    </button>
   );
 };
+
 
 /* ========= Section ========= */
 const Section: React.FC<{ id?: string; title?: string; subtitle?: string; children: React.ReactNode }> = ({ id, title, subtitle, children }) => (
@@ -141,7 +152,7 @@ const Navbar: React.FC = () => {
         <nav className="hidden md:flex items-center gap-8 text-base font-medium">
           {items.map((it, i) => (
             <a key={it.href} href={it.href} className="nav-link hover:opacity-90 drop-shadow-sm"
-               style={{ color: palette.ink, transitionDelay: `${i*20}ms` }}>
+              style={{ color: palette.ink, transitionDelay: `${i * 20}ms` }}>
               {it.label}
             </a>
           ))}
@@ -204,7 +215,16 @@ const Hero: React.FC = () => (
             className="aspect-[4/5] w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl floaty"
             style={{ background: palette.blush }}
           >
-            <img src="/images/profile.jpg" alt="Ana Carolina" className="w-full h-auto object-cover" />
+            <div className="relative aspect-[4/5] w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl floaty" style={{ background: palette.blush }}>
+              <Image
+                src="/images/profile.jpg"
+                alt="Ana Carolina"
+                fill
+                sizes="(max-width: 768px) 90vw, 400px"
+                className="object-cover"
+                priority
+              />
+            </div>
           </div>
           <div
             className="absolute right-1/2 translate-x-1/2 md:right-4 md:translate-x-0 -bottom-4 px-4 py-2 rounded-xl text-sm shadow-md"
@@ -231,7 +251,7 @@ const About: React.FC = () => (
       </Reveal>
       <Reveal delay={100}>
         <div className="rounded-2xl p-6 shadow-xl border hover:shadow-2xl transition-shadow"
-             style={{ background: palette.blush, borderColor: palette.soft }}>
+          style={{ background: palette.blush, borderColor: palette.soft }}>
           <h3 className="font-bold mb-2" style={{ color: palette.primaryDark }}>Posicionamento</h3>
           <p style={{ color: palette.ink }}>
             Portfólio diverso em moda, design e marketing. Olhar criativo aliado a estratégias reais que geram resultados.
@@ -302,12 +322,16 @@ const Carousel: React.FC<{ images: string[]; alt?: string; className?: string; }
   return (
     <div className={`relative ${className || ""}`}>
       <div className="aspect-[4/5] w-full overflow-hidden rounded-xl shadow-lg bg-white">
-        <img
-          key={images[idx]}
-          src={images[idx]}
-          alt={alt}
-          className="w-full h-full object-cover transition-all duration-300"
-        />
+        <div className="relative w-full h-full">
+          <Image
+            src={images[idx]}
+            alt={alt}
+            fill
+            sizes="(max-width: 768px) 90vw, 400px"
+            className="object-cover transition-all duration-300"
+          />
+        </div>
+
       </div>
       <button
         aria-label="Anterior"
@@ -556,14 +580,14 @@ const Education: React.FC = () => (
     <div className="grid md:grid-cols-2 gap-6">
       <Reveal>
         <div className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all"
-             style={{ borderColor: palette.soft, background: palette.blush }}>
+          style={{ borderColor: palette.soft, background: palette.blush }}>
           <h3 className="font-bold" style={{ color: palette.primaryDark }}>Design de Moda</h3>
           <p className="opacity-80" style={{ color: palette.ink }}>Universidade Dinâmica das Cataratas</p>
         </div>
       </Reveal>
       <Reveal delay={100}>
         <div className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all"
-             style={{ borderColor: palette.soft, background: palette.blush }}>
+          style={{ borderColor: palette.soft, background: palette.blush }}>
           <h3 className="font-bold" style={{ color: palette.primaryDark }}>Pós em Marketing de Moda & Beleza</h3>
           <p className="opacity-80" style={{ color: palette.ink }}>ESPM</p>
         </div>
