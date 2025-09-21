@@ -15,9 +15,9 @@ const palette = {
 
 const links = {
   behanceProfile: "https://www.behance.net/JuraCriativo",
-  instagram: "https://instagram.com/seuusuario",
-  whatsapp: "https://wa.me/55XXXXXXXXXX",
-  email: "mailto:contato@sua-marca.com",
+  whatsapp: "https://wa.me/5551998326004?text=Oi%20Ana!%20Vim%20pelo%20site%20e%20quero%20falar%20sobre%20um%20projeto.%20Podemos%20conversar?",
+  instagram: "https://www.instagram.com/annaschaeffer_/",
+  email: "mailto:anacarolinaschaeffer02@gmail.com",
 };
 
 /* ========= Animações utilitárias ========= */
@@ -71,8 +71,7 @@ const Reveal: React.FC<{ children: React.ReactNode; delay?: number; className?: 
   return <div ref={ref} className={className}>{children}</div>;
 };
 
-/* ========= Button ========= */
-/* ========= Button ========= */
+
 const Button = ({ href, children }: { href?: string; children: React.ReactNode }) => {
   const cls =
     "inline-flex items-center gap-2 px-5 py-3 rounded-2xl border shadow-lg hover:shadow-2xl transition-all active:scale-[0.98] glow";
@@ -178,7 +177,7 @@ const Hero: React.FC = () => (
       <Reveal>
         <div>
           <p className="uppercase tracking-[0.35em] text-xs mb-3" style={{ color: palette.primary }}>
-            ✨ Ana Carolina | Design, Moda & Marketing
+            Ana Carolina | Design, Moda & Marketing
           </p>
           <h1 className="text-4xl md:text-6xl font-black leading-[1.05]" style={{ color: palette.primaryDark }}>
             Transformo criatividade em estratégia para potencializar marcas e ideias.
@@ -262,25 +261,44 @@ const About: React.FC = () => (
   </Section>
 );
 
-/* ========= Serviços ========= */
 const services = [
-  "Gerenciamento de Mídias Sociais – planejamento, criação de conteúdo e estratégias para engajar e converter.",
-  "Design Gráfico & Identidade Visual – artes profissionais, branding e desenvolvimento visual que fortalecem sua marca.",
-  "Moda & Produto – pesquisa de tendências, desenvolvimento de coleções, fichas técnicas e suporte criativo para marcas de moda.",
+  {
+    title: "Gerenciamento de Mídias Sociais",
+    desc: "Planejamento, criação de conteúdo e estratégias para engajar e converter.",
+    img: "/images/projects/facoporvoce.jpeg",
+  },
+  {
+    title: "Design Gráfico & Identidade Visual",
+    desc: "Artes profissionais, branding e desenvolvimento visual que fortalecem sua marca.",
+    img: "/images/projects/facoporvoce2.jpeg",
+  },
+  {
+    title: "Moda & Produto",
+    desc: "Pesquisa de tendências, desenvolvimento de coleções, fichas técnicas e suporte criativo para marcas de moda.",
+    img: "/images/projects/facoporvoce3.jpeg",
+  },
 ];
+
 const Services: React.FC = () => (
   <Section id="services" title="O que eu faço por você" subtitle="Como posso ajudar sua marca">
     <div className="grid md:grid-cols-3 gap-6">
       {services.map((s, i) => (
         <Reveal key={i} delay={i * 60}>
           <div
-            className="rounded-2xl p-6 border shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1"
-            style={{ background: palette.paper, borderColor: palette.soft }}
+            className="rounded-2xl overflow-hidden border shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 bg-white"
+            style={{ borderColor: palette.soft }}
           >
-            <div className="text-xl font-bold mb-2" style={{ color: palette.primary }}>
-              Serviço {i + 1}
+            <img
+              src={s.img}
+              alt={s.title}
+              className="w-full h-110 object-contain"
+            />
+            <div className="p-6">
+              <div className="text-xl font-bold mb-2" style={{ color: palette.primary }}>
+                {s.title}
+              </div>
+              <p style={{ color: palette.ink }}>{s.desc}</p>
             </div>
-            <p style={{ color: palette.ink }}>{s}</p>
           </div>
         </Reveal>
       ))}
@@ -288,11 +306,13 @@ const Services: React.FC = () => (
   </Section>
 );
 
+
+
 /* ========= Diferenciais ========= */
 const differentiators = [
-  "Experiência multidisciplinar unindo moda, design e marketing.",
-  "Olhar criativo aliado a estratégias reais que geram resultados.",
-  "Portfólio diverso com projetos em diferentes áreas e clientes satisfeitos.",
+  "O que me move é transformar ideias em marcas que emocionam.",
+  "Sou formada em Design de Moda, faço pós-graduação em Marketing de Moda e Beleza e atuo como designer gráfica em múltiplos segmentos.",
+  "Estou sempre em busca de aprender mais, porque acredito que o design vai além da estética: é sobre criar conexões verdadeiras entre marcas e pessoas.",
 ];
 const Experience: React.FC = () => (
   <Section id="experience" title="Por que trabalhar comigo?" subtitle="Meus diferenciais">
@@ -378,8 +398,8 @@ const projectsData = [
     ],
   },
   {
-    title: "TRIÔOH – sinalização e branding",
-    desc: "Cobertura fotográfica do espaço e identidade aplicada.",
+    title: "TRIÔOH – Identidade Visual & Branding",
+    desc: "Desenvolvimento de logo, identidade visual e aplicações estratégicas de marca.",
     images: [
       "/images/projects/triooh/tricoh.jpg",
       "/images/projects/triooh/trico2.jpg",
@@ -387,11 +407,13 @@ const projectsData = [
     ],
   },
   {
-    title: "KIRU – embalagem & lifestyle",
-    desc: "Direção de arte, produto e lifestyle.",
+    title: "KIRU – Fotografia, embalagens & identidade",
+    desc: "Crio projetos que vão do editorial de moda à direção fotográfica de produtos, desenvolvendo embalagens exclusivas e explorando a identidade visual aplicada em diferentes formatos.",
     images: [
       "/images/projects/kiru/kiru.jpg",
       "/images/projects/kiru/kiru (2).jpg",
+      "/images/projects/kiru/kiru3.jpg",
+      "/images/projects/kiru/kiru4.jpg",
     ],
   },
 ];
@@ -408,7 +430,7 @@ const Projects: React.FC = () => (
           >
             <Carousel images={p.images} alt={p.title} />
             <div className="p-6">
-              <a href={links.behanceProfile} target="_blank" rel="noopener noreferrer">
+              <a href={links.instagram} target="_blank" rel="noopener noreferrer">
                 <h3 className="font-bold hover:underline" style={{ color: palette.primaryDark }}>{p.title}</h3>
               </a>
               <p className="text-base opacity-80" style={{ color: palette.ink }}>{p.desc}</p>
@@ -514,7 +536,7 @@ const BehanceEmbedCarousel: React.FC = () => {
   const realIndex = (virtualIndex - start + base) % base;
 
   return (
-    <Section id="behance" title="Portfólio no Behance (embed)" >
+    <Section id="behance" title="Identidades Visuais & Branding" >
       <Reveal>
         <div className="mb-6 flex items-center justify-between gap-3">
           <a
