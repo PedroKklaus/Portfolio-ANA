@@ -390,7 +390,7 @@ const projectsData = [
     title: "ARISSÁ – coleção & direção criativa",
     desc: "Editorial de moda, detalhes e modelagem.",
     images: [
-      "/images/projects/id-visual/Instagram post - 27.png",
+      "/images/projects/id-visual/Instagrampost-27.png",
       "/images/projects/id-visual/Instagram post - 28.png",
       "/images/projects/id-visual/Instagram post - 29.png",
       "/images/projects/id-visual/Instagram post - 30.png",
@@ -399,6 +399,7 @@ const projectsData = [
       "/images/projects/id-visual/Instagram post - 34.png",
     ],
   },
+
   {
     title: "TRIÔOH – Identidade Visual & Branding",
     desc: "Desenvolvimento de logo, identidade visual e aplicações estratégicas de marca.",
