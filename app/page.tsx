@@ -387,8 +387,9 @@ const Carousel: React.FC<{ images: string[]; alt?: string; className?: string; }
 /* ========= Dados dos projetos (locais) ========= */
 const projectsData = [
   {
-    title: "ARISSÁ – coleção & direção criativa",
-    desc: "Editorial de moda, detalhes e modelagem.",
+    title: "Identidade Visual & Branding",
+    desc: "Desenvolvimento de identidades visuais alinhadas ao posicionamento da marca, criando reconhecimento, coerência e valor percebido em todos os pontos de contato.",
+
     images: [
       "/images/projects/id-visual/Instagrampost-27.png",
       "/images/projects/id-visual/Instagram post - 28.png",
