@@ -390,11 +390,13 @@ const projectsData = [
     title: "ARISSÁ – coleção & direção criativa",
     desc: "Editorial de moda, detalhes e modelagem.",
     images: [
-      "/images/projects/arissa/ARISSÁ.jpg",
-      "/images/projects/arissa/ARISSÁ2.jpg",
-      "/images/projects/arissa/ARISSÁ3.jpg",
-      "/images/projects/arissa/ARISSÁ4.jpg",
-      "/images/projects/arissa/ARISSÁ5.jpg",
+      "/images/projects/id-visual/Instagram post - 27.png",
+      "/images/projects/id-visual/Instagram post - 28.png",
+      "/images/projects/id-visual/Instagram post - 29.png",
+      "/images/projects/id-visual/Instagram post - 30.png",
+      "/images/projects/id-visual/Instagram post - 32.png",
+      "/images/projects/id-visual/Instagram post - 33.png",
+      "/images/projects/id-visual/Instagram post - 34.png",
     ],
   },
   {
